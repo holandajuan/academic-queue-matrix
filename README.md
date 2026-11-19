@@ -37,10 +37,6 @@ requirements.txt
 pyproject.toml
 ```
 
-O diretório atual é a raiz do projeto; não é necessário criar outra pasta
-`fila-academica`. Detalhes das garantias e dos limites em
-[docs/arquitetura.md](docs/arquitetura.md).
-
 ## Instalação no Windows (PowerShell)
 
 Instale Python 3.11 ou superior e execute na raiz deste projeto:
