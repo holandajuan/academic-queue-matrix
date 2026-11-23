@@ -31,7 +31,7 @@ requirements.txt
 pyproject.toml
 ```
 
-## Instalação no Windows (PowerShell)
+## Instalação no Windows
 
 Instale Python 3.11 ou superior e execute na raiz deste projeto:
 
@@ -173,65 +173,6 @@ Ao usar `!entrar`, o bot cumprimenta o aluno pelo nome de exibição na sala:
 “Olá, Ana! Você entrou na fila de atendimento. Posição: 1.” Se o nome não estiver
 disponível, usa o ID Matrix. A fila e as permissões continuam identificando cada
 usuário pelo ID Matrix.
-
-Cada sala admite um atendimento ativo; finalize-o antes de chamar outro aluno.
-Um aluno pode participar de filas de salas diferentes. Sair da sala Matrix não
-remove automaticamente o aluno da fila; ele deve usar `!sair` antes de sair.
-
-## Demonstração com dois alunos e um professor
-
-Use três sessões Element: Ana (`@ana:example.org`), Bruno (`@bruno:example.org`)
-e professor (`@professor:example.org`), além da conta exclusiva do bot. Substitua
-os IDs pelos reais. A demonstração depende de credenciais válidas e de comunicação
-com um homeserver real. Comece com uma sala sem fila/atendimento e inicie o bot.
-
-| Passo | Quem envia | Mensagem | Resultado esperado |
-| --- | --- | --- | --- |
-| 1 | Ana | `!entrar` | Posição 1. |
-| 2 | Bruno | `!entrar` | Posição 2. |
-| 3 | Ana | `!entrar` | Entrada duplicada recusada. |
-| 4 | Bruno | `!posicao` | Posição 2. |
-| 5 | Professor | `!fila` | Ana antes de Bruno. |
-| 6 | Ana | `!proximo` | Permissão recusada. |
-| 7 | Professor | `!proximo` | Ana em atendimento; Bruno na espera. |
-| 8 | Professor | `!proximo` | Recusado até finalizar Ana. |
-| 9 | Ana | `!sair` | Não cancela o atendimento. |
-| 10 | Professor | `!status` | Ana em atendimento, 1 em espera. |
-| 11 | Operador | `Ctrl+C` e reiniciar o bot | Aguardar novamente o log de prontidão. |
-| 12 | Professor | `!status` | Mesmo estado persistido. |
-| 13 | Professor | `!finalizar` | Atendimento de Ana finalizado. |
-| 14 | Professor | `!proximo` | Bruno em atendimento. |
-| 15 | Professor | `!finalizar` | Atendimento de Bruno finalizado. |
-| 16 | Professor | `!proximo` | Fila vazia. |
-
-Para demonstrar isolamento, configure uma segunda sala e envie `!fila` nela:
-seu estado não depende da primeira. Para demonstrar saída, entre com Ana e Bruno,
-envie `!sair` como Ana e consulte `!posicao` como Bruno: ele passa para a posição 1.
-
-## Falhas e limitações conhecidas
-
-- Uma instância, um processo escritor e um arquivo SQLite local. O bot e o banco
-  são pontos únicos de falha. Não há alta disponibilidade ou replicação da fila.
-- Apenas salas já ingressadas, autorizadas e sem E2EE. Mensagens próprias,
-  não textuais, edições e textos que não começam com `!` são ignorados.
-- FIFO é a ordem de inserção confirmada pelo bot no SQLite, não o horário dos
-  dispositivos dos alunos. Entrega Matrix pode sofrer atraso.
-- O token de sincronização fica na memória do SDK. Quedas de rede no mesmo
-  processo retomam a sincronização incremental, com espera entre tentativas.
-  Após reiniciar, o novo lote inicial é ignorado, incluindo comandos do período offline.
-- Uma timeline limitada pelo servidor pode omitir eventos após longas desconexões.
-  Esta base não busca lacunas pelo endpoint de histórico; consulte o estado e
-  reenvie o comando se necessário.
-- `event_id` e alteração da fila são confirmados na mesma transação. Se a resposta
-  falhar depois do commit, o estado continua alterado e repetir o mesmo evento não
-  executa o comando outra vez. Consulte `!status`/`!fila` com uma nova mensagem.
-  Uma futura **outbox transacional**, com envio e retentativas separados, poderia
-  recuperar respostas pendentes. Hoje não existe entrega exatamente uma vez da resposta.
-- Erros locais do banco encerram a execução para revisão; não se prossegue
-  silenciosamente após uma transação falhar. Não há recuperação automática de
-  comandos perdidos após reiniciar nem cancelamento administrativo de atendimento.
-- Histórico e IDs de eventos crescem sem expurgo automático. Não há migração de
-  schema, backup automático, métricas ou políticas de retenção nesta base.
 
 A API utilizada pode ser consultada na [documentação oficial do matrix-nio](https://matrix-nio.readthedocs.io/en/latest/nio.html).
 As assinaturas foram verificadas também na versão instalada, fixada em `requirements.txt`.
