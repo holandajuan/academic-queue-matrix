@@ -12,7 +12,7 @@ existente; não implementa consenso nem replicação do banco da fila.
 ## Tecnologias e estrutura
 
 Python 3.11+, `asyncio`, `matrix-nio 0.25.2`, `sqlite3` da biblioteca padrão,
-`python-dotenv`, `pytest` e Element. Não requer interface web, contêineres ou outro
+`python-dotenv` e Element. Não requer interface web, contêineres ou outro
 serviço além de um servidor Matrix existente.
 
 ```text
@@ -24,12 +24,6 @@ src/fila_academica/
   command_handler.py   # comandos, permissões e deduplicação de eventos
   queue_service.py     # regras da fila, sem dependência do Matrix
   database.py          # schema, conexões e transações SQLite
-tests/
-  conftest.py
-  test_queue_service.py
-  test_command_handler.py
-  test_config.py
-  test_matrix_client.py
 docs/arquitetura.md
 .env.example
 .gitignore
@@ -184,27 +178,12 @@ Cada sala admite um atendimento ativo; finalize-o antes de chamar outro aluno.
 Um aluno pode participar de filas de salas diferentes. Sair da sala Matrix não
 remove automaticamente o aluno da fila; ele deve usar `!sair` antes de sair.
 
-## Testes
-
-```bash
-python -m pytest -q
-```
-
-Os testes usam arquivos SQLite temporários, identidades fictícias e transporte
-Matrix simulado. Cobrem FIFO por sequência, duplicação, saída, posição,
-atendimento único, finalização, histórico, fila vazia, permissões, reinicialização,
-salas independentes, idempotência e rollback de falhas. A integração usa o parser
-e a atualização de estado reais do SDK nos testes de sincronização, sem rede.
-Há também testes de configuração, filtros e falha no envio da resposta.
-
-Esses testes não comprovam autenticação, permissões ou comunicação com um
-homeserver real. A demonstração a seguir depende de credenciais válidas.
-
 ## Demonstração com dois alunos e um professor
 
 Use três sessões Element: Ana (`@ana:example.org`), Bruno (`@bruno:example.org`)
 e professor (`@professor:example.org`), além da conta exclusiva do bot. Substitua
-os IDs pelos reais. Comece com uma sala sem fila/atendimento e inicie o bot.
+os IDs pelos reais. A demonstração depende de credenciais válidas e de comunicação
+com um homeserver real. Comece com uma sala sem fila/atendimento e inicie o bot.
 
 | Passo | Quem envia | Mensagem | Resultado esperado |
 | --- | --- | --- | --- |

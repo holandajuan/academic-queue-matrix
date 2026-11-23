@@ -66,6 +66,7 @@ class CommandHandler:
             name = display_name or sender
             return f"{name} entrou na fila. Posição: {position}."
         if command == "!sair":
+            name = display_name or sender
             service.leave(room_id, sender)
             return f"{name} saiu da fila de espera."
         if command == "!fila":
@@ -78,6 +79,7 @@ class CommandHandler:
         if command == "!posicao":
             if service.active(room_id) == sender:
                 return "Você está em atendimento."
+            name = display_name or sender
             position = service.position(room_id, sender)
             return f"Posição na fila de {name}: {position}." if position else "Você não está na fila de espera."
         if command == "!proximo":
